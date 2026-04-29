@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML5 APIs Demo - Practical 11</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #draggable { background: #4CAF50; color: white; padding: 20px; text-align: center; cursor: move; }
+        #dropzone { border: 3px dashed #ccc; height: 150px; display: flex; align-items: center; justify-content: center; margin: 20px 0; background: #f9f9f9; }
+        button { padding: 10px 20px; margin: 10px; background: #2196F3; color: white; border: none; cursor: pointer; }
+        #output { margin-top: 20px; padding: 15px; background: #e8f4fd; border-left: 4px solid #2196F3; }
+    </style>
+</head>
+<body>
+    <h1>SB Jain Institute - HTML5 APIs: Drag Drop, Geolocation, Web Storage</h1>
+
+    <!-- Drag & Drop Section -->
+    <h2>1. Drag & Drop API</h2>
+    <p>Drag the green box below to the dashed drop zone.</p>
+    <div id="draggable" draggable="true">Drag Me!</div>
+    <div id="dropzone">Drop here (ondragover & ondrop events)</div>
+
+    <!-- Geolocation Section -->
+    <h2>2. Geolocation API</h2>
+    <button onclick="getLocation()">Get My Location</button>
+    <div id="geo-output">Click button to fetch lat/long (requires permission).</div>
+
+    <!-- Web Storage Section -->
+    <h2>3. Web Storage API</h2>
+    <input type="text" id="username" placeholder="Enter username" value="">
+    <button onclick="saveLocal()">Save to localStorage</button>
+    <button onclick="saveSession()">Save to sessionStorage</button>
+    <button onclick="loadData()">Load Data</button>
+    <button onclick="clearStorage()">Clear All</button>
+    <div id="storage-output">Storage data appears here.</div>
+
+    <script>
+        // Drag & Drop
+        const draggable = document.getElementById('draggable');
+        const dropzone = document.getElementById('dropzone');
+
+        draggable.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', 'Dragged Item');
+        });
+
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();  // Required to allow drop
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.innerHTML = draggable.outerHTML;
+            draggable.style.display = 'none';
+            alert('Dropped successfully!');
+        });
+
+        // Geolocation
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            } else {
+                document.getElementById('geo-output').innerText = 'Geolocation not supported.';
+            }
+        }
+
+        function showPosition(position) {
+            document.getElementById('geo-output').innerHTML = 
+                `Latitude: ${position.coords.latitude}<br>Longitude: ${position.coords.longitude}`;
+        }
+
+        function showError(error) {
+            document.getElementById('geo-output').innerText = 'Error: ' + error.message;
+        }
+
+        // Web Storage
+        function saveLocal() {
+            const user = document.getElementById('username').value;
+            localStorage.setItem('user', user);
+            loadData();
+        }
+
+        function saveSession() {
+            const user = document.getElementById('username').value;
+            sessionStorage.setItem('user', user);
+            loadData();
+        }
+
+        function loadData() {
+            const localUser = localStorage.getItem('user') || 'None';
+            const sessionUser = sessionStorage.getItem('user') || 'None';
+            document.getElementById('storage-output').innerHTML = 
+                `localStorage user: ${localUser} (persists after reload)<br>sessionStorage user: ${sessionUser} (clears on tab close)`;
+        }
+
+        function clearStorage() {
+            localStorage.clear();
+            sessionStorage.clear();
+            loadData();
+        }
+
+        // Load on start
+        loadData();
+    </script>
+</body>
+</html>
